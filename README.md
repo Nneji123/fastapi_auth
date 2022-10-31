@@ -23,7 +23,7 @@ This package can be used for development(sqlite3 database) and production(postgr
 
 ## Installation
 
-`pip install fastapi_auth`
+`pip install fastapi_auth2`
 
 ## Usage
 

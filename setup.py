@@ -45,7 +45,7 @@ env_marker_below_38 = "python_version < '3.8'"
 
 
 setup(
-    name="fastapi_auth",
+    name="fastapi_auth2",
     version=get_version("fastapi_auth"),
     url="https://nneji123.github.io/fastapi_auth/",
     license="MIT",
