@@ -9,6 +9,8 @@
 [pre-commit badge]: <https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white>
 [pre-commit project]: <https://pre-commit.com/>
 
+[![docs](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-docs.yml/badge.svg)](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-docs.yml)
+
 API key based Authentication package for FastAPI, focused on simplicity and ease of use:
 
 - Full functionality out of the box, no configuration required
