@@ -5,10 +5,8 @@
 [![Linting](https://github.com/mrtolkien/fastapi_simple_security/actions/workflows/push_sanity_check.yml/badge.svg)](https://github.com/mrtolkien/fastapi_simple_security/actions/workflows/push_sanity_check.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![pre-commit enabled][pre-commit badge]][pre-commit project]
-
 [pre-commit badge]: <https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white>
 [pre-commit project]: <https://pre-commit.com/>
-
 [![docs](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-docs.yml/badge.svg)](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-docs.yml)
 
 [![publish-pypi](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-pypi.yml/badge.svg)](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-pypi.yml)

@@ -10,7 +10,6 @@
 [pre-commit project]: <https://pre-commit.com/>
 
 [![docs](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-docs.yml/badge.svg)](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-docs.yml)
-
 [![publish-pypi](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-pypi.yml/badge.svg)](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-pypi.yml)
 
 API key based Authentication package for FastAPI, focused on simplicity and ease of use:
