@@ -16,11 +16,16 @@ repo_url: https://github.com/Nneji123/fastapi_auth
 edit_uri: ""
 
 nav:
-  - About: index.md
-  - Usage: usage.md
-  - Functions: functions.md
-  - Contributing: CONTRIBUTING.md
-  - License: LICENSE.md
+  - Home: index.md
+  - API:
+    - Postgress Access: sources/api/fastapi_auth/Postgres_access.md
+    - SQLite Access : sources/api/fastapi_auth/sqlite_access.md
+    - Security Access:  sources/api/fastapi_auth/security_secret.md
+  - Security Password: sources/security_password.md
+  - Verification Checks: sources/verification_checks.md
+  - Contributing: sources/contributing.md
+  - License: license.md
+
 
 markdown_extensions:
   - toc:
@@ -46,7 +51,7 @@ extra:
     property: UA-133183413-1
   social:
     - icon: fontawesome/brands/github-alt
-      link: https://github.com/nneji123/psgen
+      link: https://github.com/nneji123/fastapi_auth
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/neji_14
     - icon: fontawesome/brands/linkedin
