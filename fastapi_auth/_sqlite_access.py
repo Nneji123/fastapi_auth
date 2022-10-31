@@ -9,8 +9,11 @@ from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
 
 from fastapi import HTTPException
-from starlette.status import (HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND,
-                              HTTP_422_UNPROCESSABLE_ENTITY)
+from starlette.status import (
+    HTTP_403_FORBIDDEN,
+    HTTP_404_NOT_FOUND,
+    HTTP_422_UNPROCESSABLE_ENTITY,
+)
 
 
 class SQLiteAccess:
@@ -25,9 +28,7 @@ class SQLiteAccess:
             self.db_location = "sqlite.db"
 
         try:
-            self.expiration_limit = int(
-                os.environ["FASTAPI_AUTH_AUTOMATIC_EXPIRATION"]
-            )
+            self.expiration_limit = int(os.environ["FASTAPI_AUTH_AUTOMATIC_EXPIRATION"])
         except KeyError:
             self.expiration_limit = 15
 
@@ -63,9 +64,7 @@ class SQLiteAccess:
             try:
                 c.execute("ALTER TABLE FASTAPI_AUTH ADD COLUMN name TEXT")
                 c.execute("ALTER TABLE FASTAPI_AUTH ADD COLUMN email TEXT")
-                c.execute(
-                    "ALTER TABLE FASTAPI_AUTH ADD COLUMN password TEXT"
-                )
+                c.execute("ALTER TABLE FASTAPI_AUTH ADD COLUMN password TEXT")
                 connection.commit()
             except sqlite3.OperationalError:
                 pass  # Column already exist

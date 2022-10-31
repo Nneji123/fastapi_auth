@@ -11,8 +11,11 @@ from typing import List, Optional, Tuple
 import psycopg2 as pg
 from fastapi import HTTPException
 from psycopg2 import Error
-from starlette.status import (HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND,
-                              HTTP_422_UNPROCESSABLE_ENTITY)
+from starlette.status import (
+    HTTP_403_FORBIDDEN,
+    HTTP_404_NOT_FOUND,
+    HTTP_422_UNPROCESSABLE_ENTITY,
+)
 
 URI = os.environ["URI"]
 
@@ -40,9 +43,7 @@ class PostgresAccess:
             print("Error while connecting to PostgreSQL:", error)
 
         try:
-            self.expiration_limit = int(
-                os.environ["FASTAPI_AUTH_AUTOMATIC_EXPIRATION"]
-            )
+            self.expiration_limit = int(os.environ["FASTAPI_AUTH_AUTOMATIC_EXPIRATION"])
         except KeyError:
             self.expiration_limit = 15
 
@@ -142,7 +143,7 @@ class PostgresAccess:
                 )
                 connection.commit()
 
-        return {"api-key" : api_key}
+        return {"api-key": api_key}
 
     def renew_key(self, api_key: str, new_expiration_date: str) -> Optional[str]:
         """

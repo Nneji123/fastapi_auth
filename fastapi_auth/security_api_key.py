@@ -24,6 +24,7 @@ if DEV_MODE == True:
 else:
     dev = postgres_access
 
+
 async def api_key_security(
     query_param: str = Security(api_key_query),
     header_param: str = Security(api_key_header),

@@ -77,38 +77,37 @@ def check_length_password(password: str) -> str:
     """
     The check_length_password function checks if the password is longer than 8 characters, contains an uppercase letter and digit.
     If it is not, then it will generate a new password for the user and return that instead.
-    
+
     Args:
         password:str: Check if the password is at least 8 characters long, has a digit and an uppercase letter
-    
+
     Returns:
         The password if it is longer than 8 characters, has at least one digit and uppercase letter
     """
     new_password = str(pwgenerator.generate())
-    spec_char = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+    spec_char = re.compile("[@_!#$%^&*()<>?/\|}{~:]")
     if len(password) <= 8:
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN,
             detail=f"This is password is too short (less than 8 characters). You can use this generated password instead: {new_password} or choose another password longer than 8 characters.",
         )
-    elif re.search('[0-9]',password) is None:
+    elif re.search("[0-9]", password) is None:
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN,
             detail=f"The password must have at least one digit in it. You can use this generated password instead: {new_password} or choose another password longer than 8 characters.",
         )
-    elif re.search('[A-Z]',password) is None: 
+    elif re.search("[A-Z]", password) is None:
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN,
             detail=f"The password must have at least one uppercase letter. You can use this generated password instead: {new_password} or choose another password longer than 8 characters.",
         )
-    elif spec_char.search(password) == None: 
+    elif spec_char.search(password) == None:
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN,
             detail=f"The password must have at least one special character. You can use this generated password instead: {new_password} or choose another password longer than 8 characters.",
         )
     else:
         return password
-
 
 
 @api_key_router.get(
