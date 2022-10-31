@@ -4,9 +4,6 @@
 [![Python Tests](https://github.com/mrtolkien/fastapi_simple_security/actions/workflows/pr_python_tests.yml/badge.svg)](https://github.com/mrtolkien/fastapi_simple_security/actions/workflows/pr_python_tests.yml)
 [![Linting](https://github.com/mrtolkien/fastapi_simple_security/actions/workflows/push_sanity_check.yml/badge.svg)](https://github.com/mrtolkien/fastapi_simple_security/actions/workflows/push_sanity_check.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![pre-commit enabled][pre-commit badge]][pre-commit project]
-[pre-commit badge]: <https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white>
-[pre-commit project]: <https://pre-commit.com/>
 [![docs](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-docs.yml/badge.svg)](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-docs.yml)
 
 [![publish-pypi](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-pypi.yml/badge.svg)](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-pypi.yml)
@@ -46,8 +43,8 @@ app = FastAPI(
 app.include_router(api_key_router, prefix="/auth", tags=["_auth"])
 
 @app.get("/unsecure")
-async def secure_endpoint():
-    return {"message": "This is a secure endpoint"}
+async def unsecure_endpoint():
+    return {"message": "This is a unsecure endpoint"}
 
 @app.get("/secure", dependencies=[Depends(api_key_security)])
 async def secure_endpoint():
@@ -114,20 +111,20 @@ Environment variables:
 See `CONTIBUTING.md` for more information.
 ### Setting up python environment
 
-```shell script
+```bash
 poetry install
 poetry shell
 ```
 
 ### Setting up pre-commit hooks
 
-```shell script
+```bash
 pre-commit install
 ```
 
 ### Running tests
 
-```shell script
+```bash
 pytest
 ```
 
@@ -135,7 +132,7 @@ pytest
 
 The attached docker image runs a test app on `localhost:8080` with secret key `TEST_SECRET`. Run it with:
 
-```shell script
+```bash
 docker-compose build && docker-compose up
 ```
 
