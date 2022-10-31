@@ -125,7 +125,7 @@ class SQLiteAccess:
                 )
                 connection.commit()
 
-        return api_key
+        return {"api-key": api_key}
 
     def renew_key(self, api_key: str, new_expiration_date: str) -> Optional[str]:
         """

@@ -18,7 +18,7 @@ edit_uri: ""
 nav:
   - Home: index.md
   - API:
-    - Postgress Access: sources/api/fastapi_auth/Postgres_access.md
+    - Postgres Access: sources/api/fastapi_auth/Postgres_access.md
     - SQLite Access : sources/api/fastapi_auth/sqlite_access.md
     - Security Access:  sources/api/fastapi_auth/security_secret.md
   - Security Password: sources/security_password.md

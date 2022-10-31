@@ -17,7 +17,11 @@ from starlette.status import (
     HTTP_422_UNPROCESSABLE_ENTITY,
 )
 
-URI = os.environ["URI"]
+try:
+    URI = os.environ["URI"]
+except KeyError as e:
+    print("URI not set")
+    URI = None
 
 
 class PostgresAccess:
@@ -39,7 +43,7 @@ class PostgresAccess:
             record = cursor.fetchone()
             print("You are connected to - ", record, "\n")
 
-        except (Exception, Error) as error:
+        except (Exception, pg.OperationalError) as error:
             print("Error while connecting to PostgreSQL:", error)
 
         try:
@@ -60,30 +64,32 @@ class PostgresAccess:
         Returns:
             The connection to the database
         """
-        with pg.connect(URI, sslmode="require") as connection:
+        try:
+            connection = pg.connect(URI, sslmode="require")
             c = connection.cursor()
-            # Create database
+                # Create database
             c.execute(
-                """
-        CREATE TABLE IF NOT EXISTS user_database (
-            api_key TEXT PRIMARY KEY,
-            is_active INTEGER,
-            never_expire INTEGER,
-            expiration_date TEXT,
-            latest_query_date TEXT,
-            total_queries INTEGER)
-        """
-            )
+                    """
+            CREATE TABLE IF NOT EXISTS user_database (
+                api_key TEXT PRIMARY KEY,
+                is_active INTEGER,
+                never_expire INTEGER,
+                expiration_date TEXT,
+                latest_query_date TEXT,
+                total_queries INTEGER)
+            """
+                )
             connection.commit()
             # Migration: Add api key username
             try:
-                c.execute("ALTER TABLE user_database ADD COLUMN username TEXT")
-                c.execute("ALTER TABLE user_database ADD COLUMN email TEXT")
-                c.execute("ALTER TABLE user_database ADD COLUMN password TEXT")
+                c.execute("ALTER TABLE user_database ADD COLUMN IF NOT EXISTS username TEXT")
+                c.execute("ALTER TABLE user_database ADD COLUMN IF NOT EXISTS email TEXT")
+                c.execute("ALTER TABLE user_database ADD COLUMN IF NOT EXISTS password TEXT")
                 connection.commit()
-            except pg.Error as e:
-                print(e)
-
+            except pg.OperationalError as e:
+                pass
+        except pg.OperationalError as e:
+            print("URI NOT SET")
                 # pass  # Column already exist
 
     def create_key(self, username, email, password, never_expire) -> dict:

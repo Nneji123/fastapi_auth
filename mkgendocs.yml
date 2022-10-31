@@ -45,9 +45,3 @@ pages:
     source: 'fastapi_auth/security_api_key.py'
     functions:
       - api_key_security
-
-
-  # # creates an index page based on everything from target source
-  # - page: "api/fastapi_auth/index.md"
-  #   source: "tensorx/layers.py"
-  #   index: True

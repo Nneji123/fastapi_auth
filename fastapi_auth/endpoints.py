@@ -19,11 +19,15 @@ api_key_router = APIRouter()
 
 show_endpoints = "FASTAPI_AUTH_HIDE_DOCS" not in os.environ
 
-DEV_MODE = os.environ["DEV_MODE"]
-if DEV_MODE == True:
+try:
+    DEV_MODE = os.environ["DEV_MODE"]
+    if DEV_MODE == True:
+        dev = sqlite_access
+    else:
+        dev = postgres_access
+except KeyError as e:
+    print("DEV_MODE not set. Default=SQLite3 Database")
     dev = sqlite_access
-else:
-    dev = postgres_access
 
 
 def hash_password(password: str) -> str:

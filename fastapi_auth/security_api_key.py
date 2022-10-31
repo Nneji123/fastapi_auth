@@ -18,12 +18,15 @@ api_key_header = APIKeyHeader(
     name=API_KEY_NAME, scheme_name="API key header", auto_error=False
 )
 
-DEV_MODE = os.environ["DEV_MODE"]
-if DEV_MODE == True:
+try:
+    DEV_MODE = os.environ["DEV_MODE"]
+    if DEV_MODE == True:
+        dev = sqlite_access
+    else:
+        dev = postgres_access
+except KeyError as e:
+    print("DEV_MODE not set. Default=SQLite3 Database")
     dev = sqlite_access
-else:
-    dev = postgres_access
-
 
 async def api_key_security(
     query_param: str = Security(api_key_query),
