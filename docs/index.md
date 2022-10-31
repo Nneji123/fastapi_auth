@@ -47,8 +47,8 @@ app = FastAPI(
 app.include_router(api_key_router, prefix="/auth", tags=["_auth"])
 
 @app.get("/unsecure")
-async def secure_endpoint():
-    return {"message": "This is a secure endpoint"}
+async def unsecure_endpoint():
+    return {"message": "This is a unsecure endpoint"}
 
 @app.get("/secure", dependencies=[Depends(api_key_security)])
 async def secure_endpoint():
@@ -115,20 +115,20 @@ Environment variables:
 See `CONTIBUTING.md` for more information.
 ### Setting up python environment
 
-```shell script
+```bash
 poetry install
 poetry shell
 ```
 
 ### Setting up pre-commit hooks
 
-```shell script
+```bash
 pre-commit install
 ```
 
 ### Running tests
 
-```shell script
+```bash
 pytest
 ```
 
@@ -136,7 +136,7 @@ pytest
 
 The attached docker image runs a test app on `localhost:8080` with secret key `TEST_SECRET`. Run it with:
 
-```shell script
+```bash
 docker-compose build && docker-compose up
 ```
 
