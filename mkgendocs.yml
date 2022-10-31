@@ -1,0 +1,53 @@
+sources_dir: docs/sources
+templates_dir: docs/templates
+repo: https://github.com/nneji123/fastapi_auth  #link to sources on github
+version: main                              #link to sources on github
+
+pages:
+  - page: "api/fastapi_auth/Postgres_access.md"
+    source: "fastapi_auth/_postgres_access.py"
+    classes:
+      - PostgresAccess:
+          - init_db
+          - create_key
+          - renew_key
+          - revoke_key
+          - check_key
+          - _update_usage
+          - get_usage_stats
+  
+  - page: "api/fastapi_auth/sqlite_access.md"
+    source: "fastapi_auth/_sqlite_access.py"
+    classes:
+      - SQLiteAccess:
+          - init_db
+          - create_key
+          - renew_key
+          - revoke_key
+          - check_key
+          - _update_usage
+          - get_usage_stats
+
+  - page: "api/fastapi_auth/security_secret.md"
+    source: "fastapi_auth/_security_secret.py"
+    classes:
+      - SQLiteAccess:
+          - get_secret_value
+
+  - page: "verification_checks.md"
+    source: 'fastapi_auth/endpoints.py'
+    functions:
+      - hash_password
+      - email_validate
+      - check_length_password
+
+  - page: "security_password.md"
+    source: 'fastapi_auth/security_api_key.py'
+    functions:
+      - api_key_security
+
+
+  # # creates an index page based on everything from target source
+  # - page: "api/fastapi_auth/index.md"
+  #   source: "tensorx/layers.py"
+  #   index: True

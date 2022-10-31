@@ -26,6 +26,16 @@ class GhostLoadedSecret:
             return self.value
 
     def get_secret_value(self):
+        """
+        The get_secret_value function is a helper function that returns the secret value for the session.
+        If no secret value has been set, it will generate a single-use secret key for this session.
+        
+        Args:
+            self: Access the class attributes and methods
+        
+        Returns:
+            A string
+        """
         try:
             secret_value = os.environ["FASTAPI_AUTH_SECRET"]
 
