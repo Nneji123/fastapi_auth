@@ -4,13 +4,13 @@ import os
 import time
 
 import pytest
-from app.main import app
+from api.app import app
 from fastapi.testclient import TestClient
 from fastapi_auth._sqlite_access import sqlite_access
 
 # The environment variable needs to be set before importing app
 admin_key_value = "secret"
-os.environ["FASTAPI_SIMPLE_SECURITY_SECRET"] = admin_key_value
+os.environ["FASTAPI_AUTH_SECRET"] = admin_key_value
 
 
 @pytest.fixture
