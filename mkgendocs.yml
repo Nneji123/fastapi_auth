@@ -31,7 +31,7 @@ pages:
   - page: "api/fastapi_auth/security_secret.md"
     source: "fastapi_auth/_security_secret.py"
     classes:
-      - SQLiteAccess:
+      - GhostLoadedSecret:
           - get_secret_value
 
   - page: "verification_checks.md"
