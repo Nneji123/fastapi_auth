@@ -99,10 +99,7 @@ Environment variables:
     - When running the app inside Docker, use a bind mount for persistence
 - `FASTAPI_AUTH_AUTOMATIC_EXPIRATION`: Duration, in days, until an API key is deemed expired
     - 15 days by default
-- `DEV_MODE`: If set to `True`, the app will run in development mode, using an in-memory sqlite database
-    - Useful for testing and development
-    - Not recommended for production
-    - If set to `False`, the app will run in production mode, using a postgres database.
+- `DATABASE_MODE`: If set to `postgres`, the package will use a postgres database instead of sqlite
 - `URI`: Location of the postgres database
     - `postgresql://postgres:postgres@localhost:5432/postgres` by default
     - Only used if `DEV_MODE` is set to `False`

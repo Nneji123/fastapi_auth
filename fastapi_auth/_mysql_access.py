@@ -1,5 +1,5 @@
 """"
-Postgres Database Connection Class. This class should be used in production. Set "DEV_MODE=False" as an environmental variable.
+MySQL Connection Class. This class should be used in production. Set "DATABASE_MODE=MySQL" as an environmental variable.
 """
 
 import os
@@ -8,9 +8,9 @@ import uuid
 from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
 
-import psycopg2 as pg
+import pymysql
 from fastapi import HTTPException
-from psycopg2 import Error
+from pymysql import Error
 from starlette.status import (
     HTTP_403_FORBIDDEN,
     HTTP_404_NOT_FOUND,
@@ -18,26 +18,30 @@ from starlette.status import (
 )
 
 try:
-    if os.environ["DATABASE_MODE"] == "postgres":
-        POSTGRES_URI  = os.environ["POSTGRES__URI"]
+    if os.environ["DATABASE_MODE"] == "mysql":
+        MYSQL_URI = os.environ["MYSQL_URI"]
     else:
         pass
 except KeyError as e:
     pass
-    POSTGRES_URI  = None
+    MYSQL_URI = None
 
-class PostgresAccess:
-    """Class handling Remote Postgres connection and writes. Change POSTGRES_URI, if migrating database to a new location."""
+
+class MySQLAccess:
+    """Class handling Remote MySQL connection and writes. Change MYSQL_URI if migrating database to a new location."""
 
     def __init__(self):
         try:
             # Connect to an existing database
-            connection = pg.connect(POSTGRES_URI, sslmode="require")
+            connection = pymysql.connect(host='localhost',
+                                         database='database',
+                                         user='root',
+                                         password='linda321')
 
             # Create a cursor to perform database operations
             cursor = connection.cursor()
-            # Print PostgreSQL details
-            print("PostgreSQL server information")
+            # Print MySQLQL details
+            print("MySQLserver information")
             print(connection.get_dsn_parameters(), "\n")
             # Executing a SQL query
             cursor.execute("SELECT version();")
@@ -45,8 +49,8 @@ class PostgresAccess:
             record = cursor.fetchone()
             print("You are connected to - ", record, "\n")
 
-        except (Exception, pg.OperationalError) as error:
-            print("Error while connecting to PostgreSQL:", error)
+        except (Exception, pymysql.OperationalError) as error:
+            print("Error while connecting to MySQL:", error)
 
         try:
             self.expiration_limit = int(os.environ["FASTAPI_AUTH_AUTOMATIC_EXPIRATION"])
@@ -67,7 +71,15 @@ class PostgresAccess:
             The connection to the database
         """
         try:
-            connection = pg.connect(POSTGRES_URI, sslmode="require")
+            
+            host = os.environ["MYSQL_HOST_NAME"]
+            database = os.environ["MYSQL_DATABASE"]
+            user = os.environ["MYSQL_USER"]
+            password = os.environ["MYSQL_PASSWORD"]
+            connection = pymysql.connect(host=host,
+                                         database=database,
+                                         user=user,
+                                         password=password)
             c = connection.cursor()
                 # Create database
             c.execute(
@@ -88,10 +100,10 @@ class PostgresAccess:
                 c.execute("ALTER TABLE user_database ADD COLUMN IF NOT EXISTS email TEXT")
                 c.execute("ALTER TABLE user_database ADD COLUMN IF NOT EXISTS password TEXT")
                 connection.commit()
-            except pg.OperationalError as e:
+            except pymysql.OperationalError as e:
                 pass
-        except pg.OperationalError as e:
-            print("POSTGRES_URI,  NOT SET")
+        except pymysql.OperationalError and KeyError as e:
+            print("Error while connecting to MySQL:", e)
                 # pass  # Column already exist
 
     def create_key(self, username, email, password, never_expire) -> dict:
@@ -113,7 +125,10 @@ class PostgresAccess:
         """
         api_key = str(uuid.uuid4())
 
-        with pg.connect(POSTGRES_URI, sslmode="require") as connection:
+        with pymysql.connect(host='localhost',
+                                         database='database',
+                                         user='root',
+                                         password='linda321') as connection:
             c = connection.cursor()
             c.execute(
                 """SELECT username, email
@@ -169,7 +184,10 @@ class PostgresAccess:
             A string
 
         """
-        with pg.connect(POSTGRES_URI, sslmode="require") as connection:
+        with pymysql.connect(host='localhost',
+                                         database='database',
+                                         user='root',
+                                         password='linda321') as connection:
             c = connection.cursor()
 
             # We run the query like check_key but will use the response differently
@@ -248,7 +266,10 @@ class PostgresAccess:
             None
 
         """
-        with pg.connect(POSTGRES_URI, sslmode="require") as connection:
+        with pymysql.connect(host='localhost',
+                                         database='database',
+                                         user='root',
+                                         password='linda321') as connection:
             c = connection.cursor()
 
             c.execute(
@@ -275,7 +296,10 @@ class PostgresAccess:
         Returns:
             True if the api key is valid, false otherwise
         """
-        with pg.connect(POSTGRES_URI, sslmode="require") as connection:
+        with pymysql.connect(host='localhost',
+                                         database='database',
+                                         user='root',
+                                         password='linda321') as connection:
             c = connection.cursor()
 
             c.execute(
@@ -317,7 +341,10 @@ class PostgresAccess:
                 return True
 
     def _update_usage(self, api_key: str, usage_count: int):
-        with pg.connect(POSTGRES_URI, sslmode="require") as connection:
+        with pymysql.connect(host='localhost',
+                                         database='database',
+                                         user='root',
+                                         password='linda321') as connection:
             c = connection.cursor()
 
             # If we get there, this means it’s an active API key that’s in the database.\
@@ -348,7 +375,10 @@ class PostgresAccess:
         Returns:
             A list of tuples with values being api_key, is_active, expiration_date, latest_query_date, and total
         """
-        with pg.connect(POSTGRES_URI, sslmode="require") as connection:
+        with pymysql.connect(host='localhost',
+                                         database='database',
+                                         user='root',
+                                         password='linda321') as connection:
             c = connection.cursor()
 
             c.execute(
@@ -365,4 +395,4 @@ class PostgresAccess:
         return response
 
 
-postgres_access = PostgresAccess()
+mysql_access = MySQLAccess()

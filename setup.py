@@ -64,6 +64,7 @@ setup(
         'psycopg2>=2.9.5',
         'bcrypt>=4.0.1',
         'email-validator>=1.3.0',
+        'pymysql>=1.0.2',
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",

@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi_auth._postgres_access import postgres_access
 from fastapi_auth._security_secret import secret_based_security
 from fastapi_auth._sqlite_access import sqlite_access
+from fastapi_auth._mysql_access import mysql_access
 from passwordgenerator import pwgenerator
 from pydantic import BaseModel
 from starlette.status import HTTP_403_FORBIDDEN
@@ -20,13 +21,15 @@ api_key_router = APIRouter()
 show_endpoints = "FASTAPI_AUTH_HIDE_DOCS" not in os.environ
 
 try:
-    DEV_MODE = os.environ["DEV_MODE"]
-    if DEV_MODE == True:
-        dev = sqlite_access
-    else:
+    DATABASE_MODE = os.environ["DATABASE_MODE"]
+    if DATABASE_MODE == "postgres":
         dev = postgres_access
+    elif DATABASE_MODE == "mysql":
+        dev = mysql_access
+    else:
+        dev = sqlite_access
 except KeyError as e:
-    print("DEV_MODE not set. Default=SQLite3 Database")
+    print("DATABASE_MODE not set. Default=SQLite3 Database")
     dev = sqlite_access
 
 
