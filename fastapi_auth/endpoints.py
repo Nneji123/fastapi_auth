@@ -6,6 +6,8 @@ from typing import List, Optional
 
 
 import bcrypt
+from dotenv import load_dotenv
+load_dotenv()
 from email_validator import EmailNotValidError, validate_email
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi_auth._postgres_access import postgres_access
