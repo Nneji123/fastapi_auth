@@ -6,6 +6,7 @@ from fastapi import Security
 from fastapi.security import APIKeyHeader, APIKeyQuery
 from fastapi_auth._postgres_access import postgres_access
 from fastapi_auth._sqlite_access import sqlite_access
+from fastapi_auth._mysql_access import mysql_access
 from starlette.exceptions import HTTPException
 from starlette.status import HTTP_403_FORBIDDEN
 
@@ -18,15 +19,19 @@ api_key_header = APIKeyHeader(
     name=API_KEY_NAME, scheme_name="API key header", auto_error=False
 )
 
+
 try:
-    DEV_MODE = os.environ["DEV_MODE"]
-    if DEV_MODE == True:
-        dev = sqlite_access
-    else:
+    DATABASE_MODE = os.environ["DATABASE_MODE"]
+    if DATABASE_MODE == "postgres":
         dev = postgres_access
+    elif DATABASE_MODE == "mysql":
+        dev = mysql_access
+    else:
+        dev = sqlite_access
 except KeyError as e:
-    print("DEV_MODE not set. Default=SQLite3 Database")
+    print("DATABASE_MODE not set. Default=SQLite3 Database")
     dev = sqlite_access
+
 
 async def api_key_security(
     query_param: str = Security(api_key_query),

@@ -18,13 +18,12 @@ from starlette.status import (
 )
 
 try:
-    if os.environ["DATABASE_MODE"] == "postgres":
-        POSTGRES_URI  = os.environ["POSTGRES__URI"]
+    if os.environ["DATABASE_MODE"] == "postgres" and os.environ.get("POSTGRES_URI") is not None:
+        POSTGRES_URI = os.environ.get("POSTGRES_URI")
     else:
-        pass
+        POSTGRES_URI = None
 except KeyError as e:
-    pass
-    POSTGRES_URI  = None
+    POSTGRES_URI = None
 
 class PostgresAccess:
     """Class handling Remote Postgres connection and writes. Change POSTGRES_URI, if migrating database to a new location."""
@@ -91,7 +90,7 @@ class PostgresAccess:
             except pg.OperationalError as e:
                 pass
         except pg.OperationalError as e:
-            print("POSTGRES_URI,  NOT SET")
+            print(e)
                 # pass  # Column already exist
 
     def create_key(self, username, email, password, never_expire) -> dict:
@@ -113,22 +112,22 @@ class PostgresAccess:
         """
         api_key = str(uuid.uuid4())
 
-        with pg.connect(POSTGRES_URI, sslmode="require") as connection:
-            c = connection.cursor()
-            c.execute(
+        connection = pg.connect(POSTGRES_URI, sslmode="require")
+        c = connection.cursor()
+        c.execute(
                 """SELECT username, email
                    FROM user_database
                    WHERE username=%s OR email=%s""",
                 (username, email),
             )
-            result = c.fetchone()
-            if result:
-                raise HTTPException(
+        result = c.fetchone()
+        if result:
+            raise HTTPException(
                     status_code=HTTP_403_FORBIDDEN,
                     detail="This user already exists in the database. Please choose another userusername or password.",
                 )
-            else:
-                c.execute(
+        else:
+            c.execute(
                     """
                     INSERT INTO user_database
                     (api_key, is_active, never_expire, expiration_date, \
@@ -149,7 +148,7 @@ class PostgresAccess:
                         password,
                     ),
                 )
-                connection.commit()
+            connection.commit()
 
         return {"api-key": api_key}
 
@@ -169,11 +168,11 @@ class PostgresAccess:
             A string
 
         """
-        with pg.connect(POSTGRES_URI, sslmode="require") as connection:
-            c = connection.cursor()
+        connection = pg.connect(POSTGRES_URI, sslmode="require")
+        c = connection.cursor()
 
             # We run the query like check_key but will use the response differently
-            c.execute(
+        c.execute(
                 """
             SELECT is_active, total_queries, expiration_date, never_expire
             FROM user_database
@@ -181,42 +180,42 @@ class PostgresAccess:
                 (api_key,),
             )
 
-            response = c.fetchone()
+        response = c.fetchone()
 
             # API key not found
-            if not response:
-                raise HTTPException(
+        if not response:
+            raise HTTPException(
                     status_code=HTTP_404_NOT_FOUND, detail="API key not found"
                 )
 
-            response_lines = []
+        response_lines = []
 
             # Previously revoked key. Issue a text warning and reactivate it.
-            if response[0] == 0:
-                response_lines.append(
+        if response[0] == 0:
+            response_lines.append(
                     "This API key was revoked and has been reactivated."
                 )
 
             # Without an expiration date, we set it here
-            if not new_expiration_date:
-                parsed_expiration_date = (
+        if not new_expiration_date:
+            parsed_expiration_date = (
                     datetime.utcnow() + timedelta(days=self.expiration_limit)
                 ).isoformat(timespec="seconds")
 
-            else:
-                try:
+        else:
+            try:
                     # We parse and re-write to the right timespec
-                    parsed_expiration_date = datetime.fromisoformat(
+                parsed_expiration_date = datetime.fromisoformat(
                         new_expiration_date
                     ).isoformat(timespec="seconds")
-                except ValueError as exc:
-                    raise HTTPException(
+            except ValueError as exc:
+                raise HTTPException(
                         status_code=HTTP_422_UNPROCESSABLE_ENTITY,
                         detail="The expiration date could not be parsed. \
                             Please use ISO 8601.",
                     ) from exc
 
-            c.execute(
+        c.execute(
                 """
             UPDATE user_database
             SET expiration_date = %s, is_active = 1
@@ -228,13 +227,13 @@ class PostgresAccess:
                 ),
             )
 
-            connection.commit()
+        connection.commit()
 
-            response_lines.append(
+        response_lines.append(
                 f"The new expiration date for the API key is {parsed_expiration_date}"
             )
 
-            return " ".join(response_lines)
+        return " ".join(response_lines)
 
     def revoke_key(self, api_key: str):
         """
@@ -248,10 +247,10 @@ class PostgresAccess:
             None
 
         """
-        with pg.connect(POSTGRES_URI, sslmode="require") as connection:
-            c = connection.cursor()
+        connection = pg.connect(POSTGRES_URI, sslmode="require")
+        c = connection.cursor()
 
-            c.execute(
+        c.execute(
                 """
             UPDATE user_database
             SET is_active = 0
@@ -260,7 +259,7 @@ class PostgresAccess:
                 (api_key,),
             )
 
-            connection.commit()
+        connection.commit()
 
     def check_key(self, api_key: str) -> bool:
         """
@@ -275,10 +274,10 @@ class PostgresAccess:
         Returns:
             True if the api key is valid, false otherwise
         """
-        with pg.connect(POSTGRES_URI, sslmode="require") as connection:
-            c = connection.cursor()
+        connection = pg.connect(POSTGRES_URI, sslmode="require")
+        c = connection.cursor()
 
-            c.execute(
+        c.execute(
                 """
             SELECT is_active, total_queries, expiration_date, never_expire
             FROM user_database
@@ -286,43 +285,43 @@ class PostgresAccess:
                 (api_key,),
             )
 
-            response = c.fetchone()
+        response = c.fetchone()
 
-            if (
+        if (
                 # Cannot fetch a row
-                not response
+            not response
                 # Inactive
-                or response[0] != 1
+            or response[0] != 1
                 # Expired key
-                or (
-                    (not response[3])
-                    and (datetime.fromisoformat(response[2]) < datetime.utcnow())
+            or (
+                (not response[3])
+                and (datetime.fromisoformat(response[2]) < datetime.utcnow())
                 )
             ):
                 # The key is not valid
-                return False
-            else:
+            return False
+        else:
                 # The key is valid
 
                 # We run the logging in a separate thread as writing takes some time
-                threading.Thread(
-                    target=self._update_usage,
-                    args=(
-                        api_key,
-                        response[1],
+            threading.Thread(
+                target=self._update_usage,
+                args=(
+                    api_key,
+                    response[1],
                     ),
-                ).start()
+            ).start()
 
                 # We return directly
-                return True
+            return True
 
     def _update_usage(self, api_key: str, usage_count: int):
-        with pg.connect(POSTGRES_URI, sslmode="require") as connection:
-            c = connection.cursor()
+        connection = pg.connect(POSTGRES_URI, sslmode="require")
+        c = connection.cursor()
 
             # If we get there, this means it’s an active API key that’s in the database.\
             #   We update the table.
-            c.execute(
+        c.execute(
                 """
             UPDATE user_database
             SET total_queries = %s, latest_query_date = %s
@@ -335,7 +334,7 @@ class PostgresAccess:
                 ),
             )
 
-            connection.commit()
+        connection.commit()
 
     def get_usage_stats(self) -> List[Tuple[str, bool, bool, str, str, int]]:
         """
@@ -348,10 +347,10 @@ class PostgresAccess:
         Returns:
             A list of tuples with values being api_key, is_active, expiration_date, latest_query_date, and total
         """
-        with pg.connect(POSTGRES_URI, sslmode="require") as connection:
-            c = connection.cursor()
+        connection = pg.connect(POSTGRES_URI, sslmode="require")
+        c = connection.cursor()
 
-            c.execute(
+        c.execute(
                 """
             SELECT api_key, is_active, never_expire, expiration_date, \
                 latest_query_date, total_queries, username, email
@@ -359,8 +358,7 @@ class PostgresAccess:
             ORDER BY latest_query_date DESC
             """,
             )
-
-            response = c.fetchall()
+        response = c.fetchall()
 
         return response
 

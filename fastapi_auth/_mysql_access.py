@@ -25,6 +25,19 @@ try:
 except KeyError as e:
     pass
     MYSQL_URI = None
+    
+try:
+    host = os.environ.get("MYSQL_HOST")
+    database = os.environ.get("MYSQL_DATABASE")
+    user = os.environ.get("MYSQL_USER")
+    password = os.environ.get("MYSQL_PASSWORD")
+    port = int(os.environ.get("MYSQL_PORT"))
+    try:  
+        connection = pymysql.connect(host=host, database=database, user=user, port=port, password=password)
+    except Error as e:
+        connection = None
+except KeyError as e:
+    print(e)
 
 
 class MySQLAccess:
@@ -32,12 +45,6 @@ class MySQLAccess:
 
     def __init__(self):
         try:
-            # Connect to an existing database
-            connection = pymysql.connect(host='localhost',
-                                         database='database',
-                                         user='root',
-                                         password='linda321')
-
             # Create a cursor to perform database operations
             cursor = connection.cursor()
             # Print MySQLQL details

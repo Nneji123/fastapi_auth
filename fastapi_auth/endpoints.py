@@ -67,12 +67,17 @@ def email_validate(email_text: str):
         The normalized form of the email address
     """
     try:
-        # validate and get info
-        v = validate_email(email_text)
-        # replace with normalized form
-        email_text = v["email"]
-        return email_text
-    except EmailNotValidError as e:
+        if email_text != None:
+            v = validate_email(email_text)
+            # replace with normalized form
+            email_text = v["email"]
+            return email_text
+        else:
+            raise HTTPException(
+            status_code=HTTP_403_FORBIDDEN,
+            detail="This is not a valid email address. Please input a valid email address.",
+        )
+    except (EmailNotValidError, AttributeError) as e:
         # email is not valid, exception message is human-readable
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN,
@@ -93,7 +98,7 @@ def check_length_password(password: str) -> str:
     """
     new_password = str(pwgenerator.generate())
     spec_char = re.compile("[@_!#$%^&*()<>?/\|}{~:]")
-    if len(password) <= 8:
+    if password==None or len(password) <= 8:
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN,
             detail=f"This is password is too short (less than 8 characters). You can use this generated password instead: {new_password} or choose another password longer than 8 characters.",
@@ -144,11 +149,21 @@ def get_new_api_key(
     Returns:
         api_key: a newly generated API key
     """
-    if password is not None:
+    if password != "":
         password = check_length_password(password)
         password = hash_password(password)
-    if email is not None:
+    else:
+        raise HTTPException(
+            status_code=HTTP_403_FORBIDDEN,
+            detail=f"Input a password: {new_password} or choose another password longer than 8 characters.",
+        )
+    if email !="":
         email = email_validate(email)
+    else:
+        raise HTTPException(
+            status_code=HTTP_403_FORBIDDEN,
+            detail = "Input your email address.",
+        )
     return dev.create_key(username, email, password, never_expires)
 
 
