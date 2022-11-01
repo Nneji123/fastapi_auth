@@ -21,7 +21,7 @@ api_key_router = APIRouter()
 show_endpoints = "FASTAPI_AUTH_HIDE_DOCS" not in os.environ
 
 try:
-    DATABASE_MODE = os.environ["DATABASE_MODE"]
+    DATABASE_MODE = os.getenv("DATABASE_MODE")
     if DATABASE_MODE == "postgres":
         dev = postgres_access
     elif DATABASE_MODE == "mysql":
@@ -74,9 +74,9 @@ def email_validate(email_text: str):
             return email_text
         else:
             raise HTTPException(
-            status_code=HTTP_403_FORBIDDEN,
-            detail="This is not a valid email address. Please input a valid email address.",
-        )
+                status_code=HTTP_403_FORBIDDEN,
+                detail="This is not a valid email address. Please input a valid email address.",
+            )
     except (EmailNotValidError, AttributeError) as e:
         # email is not valid, exception message is human-readable
         raise HTTPException(
@@ -98,7 +98,7 @@ def check_length_password(password: str) -> str:
     """
     new_password = str(pwgenerator.generate())
     spec_char = re.compile("[@_!#$%^&*()<>?/\|}{~:]")
-    if password==None or len(password) <= 8:
+    if password == None or len(password) <= 8:
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN,
             detail=f"This is password is too short (less than 8 characters). You can use this generated password instead: {new_password} or choose another password longer than 8 characters.",
@@ -153,16 +153,17 @@ def get_new_api_key(
         password = check_length_password(password)
         password = hash_password(password)
     else:
+        new_password = str(pwgenerator.generate())
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN,
             detail=f"Input a password: {new_password} or choose another password longer than 8 characters.",
         )
-    if email !="":
+    if email != "":
         email = email_validate(email)
     else:
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN,
-            detail = "Input your email address.",
+            detail="Input your email address.",
         )
     return dev.create_key(username, email, password, never_expires)
 

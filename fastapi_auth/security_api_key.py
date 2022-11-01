@@ -2,6 +2,9 @@
 """
 
 import os
+from re import L
+
+from dotenv import load_dotenv
 from fastapi import Security
 from fastapi.security import APIKeyHeader, APIKeyQuery
 from fastapi_auth._postgres_access import postgres_access
@@ -10,6 +13,8 @@ from fastapi_auth._mysql_access import mysql_access
 from starlette.exceptions import HTTPException
 from starlette.status import HTTP_403_FORBIDDEN
 
+
+load_dotenv()
 API_KEY_NAME = "api-key"
 
 api_key_query = APIKeyQuery(
@@ -21,7 +26,7 @@ api_key_header = APIKeyHeader(
 
 
 try:
-    DATABASE_MODE = os.environ["DATABASE_MODE"]
+    DATABASE_MODE = os.getenv("DATABASE_MODE")
     if DATABASE_MODE == "postgres":
         dev = postgres_access
     elif DATABASE_MODE == "mysql":

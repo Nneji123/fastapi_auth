@@ -1,5 +1,5 @@
 """"
-MySQL Connection Class. This class should be used in production. Set "DATABASE_MODE=MySQL" as an environmental variable.
+MySQL Connection Class. This class should be used in production. Set "DATABASE_MODE=mysql" as an environmental variable.
 """
 
 import os
@@ -8,6 +8,7 @@ import uuid
 from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
 
+from dotenv import load_dotenv
 import pymysql
 from fastapi import HTTPException
 from pymysql import Error
@@ -17,23 +18,26 @@ from starlette.status import (
     HTTP_422_UNPROCESSABLE_ENTITY,
 )
 
+load_dotenv()
 try:
-    if os.environ["DATABASE_MODE"] == "mysql":
-        MYSQL_URI = os.environ["MYSQL_URI"]
+    if os.getenv("DATABASE_MODE") == "mysql":
+        MYSQL_URI = os.getenv("MYSQL_URI")
     else:
         pass
 except KeyError as e:
     pass
     MYSQL_URI = None
-    
+
 try:
-    host = os.environ.get("MYSQL_HOST")
-    database = os.environ.get("MYSQL_DATABASE")
-    user = os.environ.get("MYSQL_USER")
-    password = os.environ.get("MYSQL_PASSWORD")
-    port = int(os.environ.get("MYSQL_PORT"))
-    try:  
-        connection = pymysql.connect(host=host, database=database, user=user, port=port, password=password)
+    host = os.getenv("MYSQL_HOST")
+    database = os.getenv("MYSQL_DATABASE")
+    user = os.getenv("MYSQL_USER")
+    password = os.getenv("MYSQL_PASSWORD")
+    port = int(os.getenv("MYSQL_PORT"))
+    try:
+        connection = pymysql.connect(
+            host=host, database=database, user=user, port=port, password=password
+        )
     except Error as e:
         connection = None
 except KeyError as e:
@@ -45,6 +49,14 @@ class MySQLAccess:
 
     def __init__(self):
         try:
+            connection = pymysql.connect(
+                host=host,
+                database=database,
+                user=user,
+                port=port,
+                password=password,
+                ssl="require",
+            )
             # Create a cursor to perform database operations
             cursor = connection.cursor()
             # Print MySQLQL details
@@ -56,12 +68,12 @@ class MySQLAccess:
             record = cursor.fetchone()
             print("You are connected to - ", record, "\n")
 
-        except (Exception, pymysql.OperationalError) as error:
+        except (Exception, pymysql.err.OperationalError) as error:
             print("Error while connecting to MySQL:", error)
 
         try:
-            self.expiration_limit = int(os.environ["FASTAPI_AUTH_AUTOMATIC_EXPIRATION"])
-        except KeyError:
+            self.expiration_limit = int(os.environ("FASTAPI_AUTH_AUTOMATIC_EXPIRATION"))
+        except (KeyError, TypeError) as e:
             self.expiration_limit = 15
 
         self.init_db()
@@ -78,19 +90,18 @@ class MySQLAccess:
             The connection to the database
         """
         try:
-            
-            host = os.environ["MYSQL_HOST_NAME"]
-            database = os.environ["MYSQL_DATABASE"]
-            user = os.environ["MYSQL_USER"]
-            password = os.environ["MYSQL_PASSWORD"]
-            connection = pymysql.connect(host=host,
-                                         database=database,
-                                         user=user,
-                                         password=password)
+
+            host = os.getenv("MYSQL_HOST_NAME")
+            database = os.getenv("MYSQL_DATABASE")
+            user = os.getenv("MYSQL_USER")
+            password = os.getenv("MYSQL_PASSWORD")
+            connection = pymysql.connect(
+                host=host, database=database, user=user, password=password
+            )
             c = connection.cursor()
-                # Create database
+            # Create database
             c.execute(
-                    """
+                """
             CREATE TABLE IF NOT EXISTS user_database (
                 api_key TEXT PRIMARY KEY,
                 is_active INTEGER,
@@ -99,19 +110,25 @@ class MySQLAccess:
                 latest_query_date TEXT,
                 total_queries INTEGER)
             """
-                )
+            )
             connection.commit()
             # Migration: Add api key username
             try:
-                c.execute("ALTER TABLE user_database ADD COLUMN IF NOT EXISTS username TEXT")
-                c.execute("ALTER TABLE user_database ADD COLUMN IF NOT EXISTS email TEXT")
-                c.execute("ALTER TABLE user_database ADD COLUMN IF NOT EXISTS password TEXT")
+                c.execute(
+                    "ALTER TABLE user_database ADD COLUMN IF NOT EXISTS username TEXT"
+                )
+                c.execute(
+                    "ALTER TABLE user_database ADD COLUMN IF NOT EXISTS email TEXT"
+                )
+                c.execute(
+                    "ALTER TABLE user_database ADD COLUMN IF NOT EXISTS password TEXT"
+                )
                 connection.commit()
-            except pymysql.OperationalError as e:
+            except pymysql.err.OperationalError as e:
                 pass
-        except pymysql.OperationalError and KeyError as e:
+        except (pymysql.err.OperationalError, KeyError) as e:
             print("Error while connecting to MySQL:", e)
-                # pass  # Column already exist
+            # pass  # Column already exist
 
     def create_key(self, username, email, password, never_expire) -> dict:
         """
@@ -132,10 +149,9 @@ class MySQLAccess:
         """
         api_key = str(uuid.uuid4())
 
-        with pymysql.connect(host='localhost',
-                                         database='database',
-                                         user='root',
-                                         password='linda321') as connection:
+        with pymysql.connect(
+            host="localhost", database="database", user="root", password="linda321"
+        ) as connection:
             c = connection.cursor()
             c.execute(
                 """SELECT username, email
@@ -191,10 +207,9 @@ class MySQLAccess:
             A string
 
         """
-        with pymysql.connect(host='localhost',
-                                         database='database',
-                                         user='root',
-                                         password='linda321') as connection:
+        with pymysql.connect(
+            host="localhost", database="database", user="root", password="linda321"
+        ) as connection:
             c = connection.cursor()
 
             # We run the query like check_key but will use the response differently
@@ -273,10 +288,9 @@ class MySQLAccess:
             None
 
         """
-        with pymysql.connect(host='localhost',
-                                         database='database',
-                                         user='root',
-                                         password='linda321') as connection:
+        with pymysql.connect(
+            host="localhost", database="database", user="root", password="linda321"
+        ) as connection:
             c = connection.cursor()
 
             c.execute(
@@ -303,10 +317,9 @@ class MySQLAccess:
         Returns:
             True if the api key is valid, false otherwise
         """
-        with pymysql.connect(host='localhost',
-                                         database='database',
-                                         user='root',
-                                         password='linda321') as connection:
+        with pymysql.connect(
+            host="localhost", database="database", user="root", password="linda321"
+        ) as connection:
             c = connection.cursor()
 
             c.execute(
@@ -348,10 +361,9 @@ class MySQLAccess:
                 return True
 
     def _update_usage(self, api_key: str, usage_count: int):
-        with pymysql.connect(host='localhost',
-                                         database='database',
-                                         user='root',
-                                         password='linda321') as connection:
+        with pymysql.connect(
+            host="localhost", database="database", user="root", password="linda321"
+        ) as connection:
             c = connection.cursor()
 
             # If we get there, this means it’s an active API key that’s in the database.\
@@ -382,10 +394,9 @@ class MySQLAccess:
         Returns:
             A list of tuples with values being api_key, is_active, expiration_date, latest_query_date, and total
         """
-        with pymysql.connect(host='localhost',
-                                         database='database',
-                                         user='root',
-                                         password='linda321') as connection:
+        with pymysql.connect(
+            host="localhost", database="database", user="root", password="linda321"
+        ) as connection:
             c = connection.cursor()
 
             c.execute(

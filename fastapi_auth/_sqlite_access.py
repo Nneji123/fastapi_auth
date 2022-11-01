@@ -23,12 +23,12 @@ class SQLiteAccess:
 
     def __init__(self):
         try:
-            self.db_location = os.environ["FASTAPI_AUTH_DB_LOCATION"]
-        except KeyError:
+            self.db_location = os.getenv("FASTAPI_AUTH_DB_LOCATION")
+        except (KeyError, TypeError):
             self.db_location = "sqlite.db"
 
         try:
-            self.expiration_limit = int(os.environ["FASTAPI_AUTH_AUTOMATIC_EXPIRATION"])
+            self.expiration_limit = int(os.getenv("FASTAPI_AUTH_AUTOMATIC_EXPIRATION"))
         except KeyError:
             self.expiration_limit = 15
 

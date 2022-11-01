@@ -5,6 +5,8 @@ import os
 from fastapi.testclient import TestClient
 
 os.environ["DEV_MODE"] = "True"
+
+
 def test_no_api_key(client: TestClient):
     response = client.get("/unsecured")
     assert response.status_code == 200
