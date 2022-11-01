@@ -5,8 +5,10 @@
 [![Linting](https://github.com/mrtolkien/fastapi_simple_security/actions/workflows/push_sanity_check.yml/badge.svg)](https://github.com/mrtolkien/fastapi_simple_security/actions/workflows/push_sanity_check.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![docs](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-docs.yml/badge.svg)](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-docs.yml)
-
 [![publish-pypi](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-pypi.yml/badge.svg)](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-pypi.yml)
+[![Downloads](https://pepy.tech/badge/fastapi-auth2)](https://pepy.tech/project/fastapi-auth2)
+[![Downloads](https://pepy.tech/badge/fastapi-auth2/month)](https://pepy.tech/project/fastapi-auth2)
+
 
 API key based Authentication package for FastAPI, focused on simplicity and ease of use:
 
