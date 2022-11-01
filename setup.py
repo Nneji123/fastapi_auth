@@ -65,6 +65,8 @@ setup(
         'bcrypt>=4.0.1',
         'email-validator>=1.3.0',
         'pymysql>=1.0.2',
+        'uvicorn>=0.18.3',
+        'pymongo>=4.0.0',
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
