@@ -1,5 +1,6 @@
 import os
 import threading
+from types import NoneType
 import uuid
 from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
@@ -7,7 +8,7 @@ from typing import List, Optional, Tuple
 
 from dotenv import load_dotenv
 from fastapi import HTTPException
-from fastapi_auth.endpoints import DATABASE_MODE
+
 
 import pymongo
 from starlette.status import (
@@ -16,92 +17,102 @@ from starlette.status import (
     HTTP_422_UNPROCESSABLE_ENTITY,
 )
 
-
 load_dotenv()
 
 try:
-    if DATABASE_MODE == "mongodb":
+    if (
+        os.getenv("DATABASE_MODE") == "mongodb"
+        and os.getenv("MONGODB_URL") is not None
+    ):
         MONGODB_URL = os.getenv("MONGODB_URL")
     else:
-        pass
+        MONGODB_URL = None
 except KeyError as e:
-    print("DATABASE_MODE not set. Default=SQLite3 Database")
-    pass
+    print(e)
 
-#myclient = pymongo.MongoClient(MONGODB_URL)
-
-# mydb = myclient["mydatabase"]
-# mydb = myclient["mydatabase"]
-# mycol = mydb["user_database"]
-# #mydict = {"username":, "email":,"password":}
-# print(myclient.list_database_names())
-# print("done")
 
 class MongodbAccess:
     """Class handling Remote Mongodb connection and writes. Change MONGODB_URI, if migrating database to a new location."""
+
     def __init__(self):
         try:
-             # Connect to an existing database
+            # Connect to an existing database
             connection = pymongo.MongoClient(MONGODB_URL)
-            mydb = connection["mydatabase"]
-            mytable = mydb["user_database"]
-            # Print PostgreSQL details
-            print(mydb.list_database_names())
-            print("You are connected to - ", mytable.list_database_names(), "\n")
+            mydb = connection["test"]
+            mytable = mydb["user"]
+            print("You are connected to - ", mytable.list_database_names, "\n")
         except Exception as e:
             print("Error while connecting to mongodb database!", e)
-            
-        def init_db(self):
-        """
-        The init_db function creates a new database if one does not exist.
-        It also migrates the old user_database to the new format, and adds columns for email, password, and username.
 
-        Args:
-            self: Access variables that belong to the class
-
-        Returns:
-            The connection to the database
-        """
         try:
+            self.expiration_limit = int(os.getenv("FASTAPI_AUTH_AUTOMATIC_EXPIRATION"))
+        except KeyError:
+            self.expiration_limit = 15
 
-            host = os.getenv("MYSQL_HOST_NAME")
-            database = os.getenv("MYSQL_DATABASE")
-            user = os.getenv("MYSQL_USER")
-            password = os.getenv("MYSQL_PASSWORD")
-            connection = pymysql.connect(
-                host=host, database=database, user=user, password=password
-            )
-            c = connection.cursor()
-            # Create database
-            c.execute(
-                """
-            CREATE TABLE IF NOT EXISTS user_database (
-                api_key TEXT PRIMARY KEY,
-                is_active INTEGER,
-                never_expire INTEGER,
-                expiration_date TEXT,
-                latest_query_date TEXT,
-                total_queries INTEGER)
-            """
-            )
-            connection.commit()
-            # Migration: Add api key username
-            try:
-                c.execute(
-                    "ALTER TABLE user_database ADD COLUMN IF NOT EXISTS username TEXT"
-                )
-                c.execute(
-                    "ALTER TABLE user_database ADD COLUMN IF NOT EXISTS email TEXT"
-                )
-                c.execute(
-                    "ALTER TABLE user_database ADD COLUMN IF NOT EXISTS password TEXT"
-                )
-                connection.commit()
-            except pymysql.err.OperationalError as e:
-                pass
-        except (pymysql.err.OperationalError, KeyError) as e:
-            print("Error while connecting to MySQL:", e)
-            # pass  # Column already exist
+        self.init_db()
+
+    def init_db(self):
+        try:
+            connection = pymongo.MongoClient(MONGODB_URL)
+            db = connection["test"]
+            mycol = db["user_database"]
+            mydict = {
+                "api_key": "api_key",
+                "is_active": "is_active",
+                "never_expire": "never_expire",
+                "expiration_date": "expiration_date",
+                "latest_query_date": "latest_query_date",
+                "total_queries": "total_queries",
+                "username": "username",
+                "email": "email",
+                "password": "password",
+            }
             
+            # Create database
+            mycol.insert_one(mydict)
+        except Exception as e:
+            print("Error while using mongodb:", e)
+
+    def create_key(self, username, email, password, never_expire) -> dict:
+        api_key = str(uuid.uuid4())
+        connection = pymongo.MongoClient(MONGODB_URL)
+        db = connection["test"]
+        mycol = db["user"]
+        mydict = {
+                "api_key": api_key,
+                "is_active": 1,
+                "never_expire": 1 if never_expire else 0,
+                "expiration_date": (
+                    datetime.utcnow() + timedelta(days=self.expiration_limit)
+                ).isoformat(timespec="seconds"),
+                "latest_query_date": None,
+                "total_queries": 0,
+                "username": username,
+                "email": email,
+                "password": password,
+            }
+        try:
+            if email not in connection.db.mycol.find_one({"username": username}):
+                mycol.insert_one(mydict)
+                data = list()
+                for x in mycol.find():
+                    data.append(x)
+                    print(data)
+                return {"api-key": api_key}
+            else:
+                print("Error")
+        except TypeError:
+            # print()
+            raise HTTPException(status_code=HTTP_403_FORBIDDEN,
+                               detail = "This user already exists")
+        # else:
+        #     raise HTTPException(
+        #         status_code=HTTP_403_FORBIDDEN,
+        #         detail="This user already exists in the database",
+        #     )
+            
+
+        
+
 
 mongodb_access = MongodbAccess()

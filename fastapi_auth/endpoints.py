@@ -15,6 +15,7 @@ from pydantic import BaseModel
 from starlette.status import HTTP_403_FORBIDDEN
 
 from fastapi_auth._mysql_access import mysql_access
+from fastapi_auth._mongodb_access import mongodb_access
 from fastapi_auth._postgres_access import postgres_access
 from fastapi_auth._security_secret import secret_based_security
 from fastapi_auth._sqlite_access import sqlite_access
@@ -29,6 +30,8 @@ try:
         dev = postgres_access
     elif DATABASE_MODE == "mysql":
         dev = mysql_access
+    elif DATABASE_MODE == "mongodb":
+        dev = mongodb_access
     else:
         dev = sqlite_access
 except KeyError as e:
@@ -84,7 +87,7 @@ def email_validate(email_text: str):
         # email is not valid, exception message is human-readable
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN,
-            detail="This is not a valid email address. Please input a valid email address.",
+            detail=f"The email entered '{email_text}' is not a valid email address. Please input a valid email address.",
         )
 
 

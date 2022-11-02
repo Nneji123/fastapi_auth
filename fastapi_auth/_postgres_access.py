@@ -11,7 +11,6 @@ from typing import List, Optional, Tuple
 import psycopg2 as pg
 from dotenv import load_dotenv
 from fastapi import HTTPException
-from psycopg2 import Error
 from starlette.status import (
     HTTP_403_FORBIDDEN,
     HTTP_404_NOT_FOUND,
