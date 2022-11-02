@@ -141,9 +141,9 @@ def test_wrong_admin_key(client: TestClient):
 def test_no_secret():
     del os.environ["FASTAPI_SIMPLE_SECURITY_SECRET"]
 
-    from fastapi_auth._security_secret import (
+    from fastapi_auth._security_secret import (  # pylint: disable=import-outside-toplevel
         secret,
-    )  # pylint: disable=import-outside-toplevel
+    )
 
     value = secret.get_secret_value()
 

@@ -4,19 +4,20 @@ import os
 import re
 from typing import List, Optional
 
-
 import bcrypt
 from dotenv import load_dotenv
+
 load_dotenv()
 from email_validator import EmailNotValidError, validate_email
 from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi_auth._postgres_access import postgres_access
-from fastapi_auth._security_secret import secret_based_security
-from fastapi_auth._sqlite_access import sqlite_access
-from fastapi_auth._mysql_access import mysql_access
 from passwordgenerator import pwgenerator
 from pydantic import BaseModel
 from starlette.status import HTTP_403_FORBIDDEN
+
+from fastapi_auth._mysql_access import mysql_access
+from fastapi_auth._postgres_access import postgres_access
+from fastapi_auth._security_secret import secret_based_security
+from fastapi_auth._sqlite_access import sqlite_access
 
 api_key_router = APIRouter()
 

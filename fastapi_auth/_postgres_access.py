@@ -8,8 +8,8 @@ import uuid
 from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
 
-from dotenv import load_dotenv
 import psycopg2 as pg
+from dotenv import load_dotenv
 from fastapi import HTTPException
 from psycopg2 import Error
 from starlette.status import (

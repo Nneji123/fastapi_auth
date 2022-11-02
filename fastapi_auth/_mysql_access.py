@@ -8,8 +8,8 @@ import uuid
 from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
 
-from dotenv import load_dotenv
 import pymysql
+from dotenv import load_dotenv
 from fastapi import HTTPException
 from pymysql import Error
 from starlette.status import (
@@ -61,7 +61,6 @@ class MySQLAccess:
             cursor = connection.cursor()
             # Print MySQLQL details
             print("MySQLserver information")
-            print(connection.get_dsn_parameters(), "\n")
             # Executing a SQL query
             cursor.execute("SELECT version();")
             # Fetch result

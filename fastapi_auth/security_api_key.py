@@ -7,12 +7,12 @@ from re import L
 from dotenv import load_dotenv
 from fastapi import Security
 from fastapi.security import APIKeyHeader, APIKeyQuery
-from fastapi_auth._postgres_access import postgres_access
-from fastapi_auth._sqlite_access import sqlite_access
-from fastapi_auth._mysql_access import mysql_access
 from starlette.exceptions import HTTPException
 from starlette.status import HTTP_403_FORBIDDEN
 
+from fastapi_auth._mysql_access import mysql_access
+from fastapi_auth._postgres_access import postgres_access
+from fastapi_auth._sqlite_access import sqlite_access
 
 load_dotenv()
 API_KEY_NAME = "api-key"
