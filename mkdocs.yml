@@ -20,7 +20,9 @@ nav:
   - API:
     - Postgres Access: sources/api/fastapi_auth/Postgres_access.md
     - SQLite Access : sources/api/fastapi_auth/sqlite_access.md
+    - MongoDB Access: sources/api/fastapi_auth/mongodb_access.md
     - Security Access:  sources/api/fastapi_auth/security_secret.md
+  - Environment Variables: sources/env_vars.md
   - Security Password: sources/security_password.md
   - Verification Checks: sources/verification_checks.md
   - Contributing: sources/contributing.md

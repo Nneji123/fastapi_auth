@@ -28,6 +28,17 @@ pages:
           - _update_usage
           - get_usage_stats
 
+  - page: "api/fastapi_auth/mongodb_access.md"
+    source: "fastapi_auth/_mongodb_access.py"
+    classes:
+      - MongodbAccess:
+          - init_db
+          - create_key
+          - renew_key
+          - revoke_key
+          - check_key
+          - get_usage_stats
+
   - page: "api/fastapi_auth/security_secret.md"
     source: "fastapi_auth/_security_secret.py"
     classes:

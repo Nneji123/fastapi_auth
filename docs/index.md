@@ -1,16 +1,18 @@
-# FastAPI Authentication
+# fastapi_auth2
 
+
+
+[![Pypi](https://img.shields.io/pypi/v/fastapi_auth2.svg)](https://pypi.org/project/fastapi_auth2/)
+[![PyPI - Python](https://img.shields.io/badge/python-3.6%20|%203.7%20|%203.8-blue.svg)](https://pypi.org/project/fastapi_auth2/)
 [![codecov](https://codecov.io/github/mrtolkien/fastapi_simple_security/branch/master/graph/badge.svg?token=8VIKJ9J3XF)](https://codecov.io/github/mrtolkien/fastapi_simple_security)
 [![Python Tests](https://github.com/mrtolkien/fastapi_simple_security/actions/workflows/pr_python_tests.yml/badge.svg)](https://github.com/mrtolkien/fastapi_simple_security/actions/workflows/pr_python_tests.yml)
 [![Linting](https://github.com/mrtolkien/fastapi_simple_security/actions/workflows/push_sanity_check.yml/badge.svg)](https://github.com/mrtolkien/fastapi_simple_security/actions/workflows/push_sanity_check.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![pre-commit enabled][pre-commit badge]][pre-commit project]
-
-[pre-commit badge]: <https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white>
-[pre-commit project]: <https://pre-commit.com/>
-
 [![docs](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-docs.yml/badge.svg)](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-docs.yml)
 [![publish-pypi](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-pypi.yml/badge.svg)](https://github.com/Nneji123/fastapi_auth/actions/workflows/publish-pypi.yml)
+[![Downloads](https://pepy.tech/badge/fastapi-auth2)](https://pepy.tech/project/fastapi-auth2)
+[![Downloads](https://pepy.tech/badge/fastapi-auth2/month)](https://pepy.tech/project/fastapi-auth2)
+
 
 API key based Authentication package for FastAPI, focused on simplicity and ease of use:
 
@@ -21,8 +23,13 @@ API key based Authentication package for FastAPI, focused on simplicity and ease
 - Username, Email address and password(hashing + salting) verification features.
 - Lightweight, minimal dependencies required.
 
-This package can be used for development(sqlite3 database) and production(postgres database) environments.
-
+## Updates
+1. Added **partial** support for mongodb database backend.
+2. Added support for environment variables through .env files.
+3. Added `example.env` file to show how to use environment variables.
+4. Updated `README.md` to reflect changes.
+5. Updated documentation to reflect changes.
+6. Working on adding support for `mysql` database backend.
 
 ## Installation
 
@@ -38,7 +45,7 @@ from fastapi_auth import api_key_router, api_key_security
 
 
 app = FastAPI(
-    description="FastAPI Auth is a package that provides authentication based API security with FastAPI and Postgres Database or Sqlite3 Database.",
+    description="FastAPI Auth is a package that provides authentication based API security with FastAPI and Postgres Database, SQLite Database or MongoDB Database",
     title="FastAPI Auth Example",  
     version=1.0,
 )
@@ -80,6 +87,7 @@ And finally, you can use this API key to access the secure endpoint.
 
 ![secure endpoint](images/secure_endpoint.png)
 
+
 ### API key creation in python
 
 You can of course automate API key acquisition through python with `requests` and directly querying the endpoints.
@@ -103,10 +111,7 @@ Environment variables:
     - When running the app inside Docker, use a bind mount for persistence
 - `FASTAPI_AUTH_AUTOMATIC_EXPIRATION`: Duration, in days, until an API key is deemed expired
     - 15 days by default
-- `DEV_MODE`: If set to `True`, the app will run in development mode, using an in-memory sqlite database
-    - Useful for testing and development
-    - Not recommended for production
-    - If set to `False`, the app will run in production mode, using a postgres database.
+- `DATABASE_MODE`: If set to `postgres`, the package will use a postgres database instead of sqlite
 - `URI`: Location of the postgres database
     - `postgresql://postgres:postgres@localhost:5432/postgres` by default
     - Only used if `DEV_MODE` is set to `False`
@@ -140,7 +145,5 @@ The attached docker image runs a test app on `localhost:8080` with secret key `T
 docker-compose build && docker-compose up
 ```
 
-## TODO
-- Add more tests
-- Add more database backends
-- Add more authentication methods
+## License
+[MIT](https://choosealicense.com/licenses/mit/)

@@ -23,8 +23,13 @@ API key based Authentication package for FastAPI, focused on simplicity and ease
 - Username, Email address and password(hashing + salting) verification features.
 - Lightweight, minimal dependencies required.
 
-This package can be used for development(sqlite3 database) and production(postgres database) environments.
-
+## Updates
+1. Added **partial** support for mongodb database backend.
+2. Added support for environment variables through .env files.
+3. Added `example.env` file to show how to use environment variables.
+4. Updated `README.md` to reflect changes.
+5. Updated documentation to reflect changes.
+6. Working on adding support for `mysql` database backend.
 
 ## Installation
 
@@ -40,7 +45,7 @@ from fastapi_auth import api_key_router, api_key_security
 
 
 app = FastAPI(
-    description="FastAPI Auth is a package that provides authentication based API security with FastAPI and Postgres Database or Sqlite3 Database.",
+    description="FastAPI Auth is a package that provides authentication based API security with FastAPI and Postgres Database, SQLite Database or MongoDB Database",
     title="FastAPI Auth Example",  
     version=1.0,
 )
@@ -81,6 +86,7 @@ Then, you can use `/auth/new` to generate a new API key.
 And finally, you can use this API key to access the secure endpoint.
 
 ![secure endpoint](images/secure_endpoint.png)
+
 
 ### API key creation in python
 
