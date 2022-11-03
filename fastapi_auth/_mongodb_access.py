@@ -1,6 +1,7 @@
 import os
 import threading
 from types import NoneType
+from urllib import response
 import uuid
 from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
@@ -91,28 +92,81 @@ class MongodbAccess:
                 "email": email,
                 "password": password,
             }
-        try:
-            if email not in connection.db.mycol.find_one({"username": username}):
-                mycol.insert_one(mydict)
-                data = list()
-                for x in mycol.find():
-                    data.append(x)
-                    print(data)
-                return {"api-key": api_key}
-            else:
-                print("Error")
-        except TypeError:
-            # print()
+        # check if user already exists in the mongodb database and if not, create a new user
+        if (mycol.find_one({"username": username}) is None and mycol.find_one({"email": email}) is None):
+            mycol.insert_one(mydict)
+            # data = list()
+            # for x in mycol.find():
+            #     data.append(x)
+            #     print(data)
+            return {"api-key": api_key}
+        else:
             raise HTTPException(status_code=HTTP_403_FORBIDDEN,
-                               detail = "This user already exists")
-        # else:
-        #     raise HTTPException(
-        #         status_code=HTTP_403_FORBIDDEN,
-        #         detail="This user already exists in the database",
-        #     )
+                detail = "This user already exists")
             
+            
+            
+    def renew_key(self, api_key: str, new_expiration_date: str) -> Optional[str]:
+        raise HTTPException(status = HTTP_422_UNPROCESSABLE_ENTITY, detail="This endpoint is tot implemented yet with Mongodb")  
 
+
+
+        # connection = pymongo.MongoClient(MONGODB_URL)
+        # db = connection["test"]
+        # mycol = db["user"]
+        # response = mycol.find_one({"api_key": api_key})
+       
+        # if response is None:
+        #     raise HTTPException(
+        #         status_code=HTTP_404_NOT_FOUND, detail="API key not found"
+        #     )
+
+        #     # Without an expiration date, we set it here
+        # if not new_expiration_date:
+        #     parsed_expiration_date = (
+        #         datetime.utcnow() + timedelta(days=self.expiration_limit)
+        #     ).isoformat(timespec="seconds")
+
+        # else:
+        #     try:
+        #         # We parse and re-write to the right timespec
+        #         parsed_expiration_date = datetime.fromisoformat(
+        #             new_expiration_date
+        #         ).isoformat(timespec="seconds")
+        #     except ValueError as exc:
+        #         raise HTTPException(
+        #             status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+        #             detail="The expiration date could not be parsed. \
+        #                     Please use ISO 8601.",
+        #         ) from exc
+        # response_lines = []
+        # myquery = {"api_key": api_key, "expiration_date": new_expiration_date}
+        # if mycol.find_one(myquery) is not None:
+        #     newvalues = {"$set": {"expiration_date": parsed_expiration_date}}
+        #     mycol.update_one(myquery, newvalues)
+        #     response_lines.append(f"The expiration date has been set to {parsed_expiration_date}.")
+        #     return " ".join(response_lines)
+        # else:
+        #     print("error")
+            
+            
+    def revoke_key(self, api_key: str):
+        connection = pymongo.MongoClient(MONGODB_URL)
+        db = connection["test"]
+        mycol = db["user"]
+        myquery = {"api_key": api_key}
+        if mycol.find_one(myquery) is not None:
+            newvalues = {"$set": {"is_active": 0}}
+            mycol.update_one(myquery, newvalues)
+            return "This API key has been revoked." 
+        else:
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="API key not found")
+
+
+    def check_key(self, api_key: str) -> Optional[str]:
+        raise HTTPException(status = HTTP_422_UNPROCESSABLE_ENTITY, detail="This endpoint is tot implemented yet with Mongodb")  
+    
+    def get_usage_stats(self) -> List[Tuple[str, bool, bool, str, str, int, str, str]]:
+        raise HTTPException(status = HTTP_422_UNPROCESSABLE_ENTITY, detail="This endpoint is tot implemented yet with Mongodb")  
         
-
-
 mongodb_access = MongodbAccess()
